@@ -1,0 +1,16 @@
+encoding "utf8";
+
+import "base.proto";
+import "articles_base.proto";
+import "fact_types.proto";
+
+import "position.gzt";
+import "building_type.gzt";
+
+TAuxDicArticle "ЗначимаяПерсона" {
+    key = { "tomita:significant_person.cxx" type=CUSTOM }
+}
+
+TAuxDicArticle "Достопримечательность" {
+    key = { "tomita:attraction.cxx" type=CUSTOM }
+}

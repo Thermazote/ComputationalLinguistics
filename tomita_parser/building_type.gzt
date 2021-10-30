@@ -1,0 +1,5 @@
+encoding "utf8";
+
+TAuxDicArticle "ТипПостройки" {
+    key = { "building_types.txt" type=FILE }
+}
