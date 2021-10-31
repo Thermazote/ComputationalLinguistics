@@ -1,9 +1,15 @@
 import requests
 from bs4 import BeautifulSoup as BS
 import webbrowser as wb # for debuging
+import sqlite3
 
-
+    
 siteURL = "https://v102.ru"
+dbName = "db.sqlite"
+
+# connect database
+db = sqlite3.connect(dbName)
+cursor = db.cursor()
 
 # get html page
 rq = requests.get(siteURL)
@@ -18,17 +24,14 @@ aLink = siteURL + article.find("a", class_ ="detail-link").get("href")
 #get article content
 rqArticle = requests.get(aLink)
 aHtml = BS(rqArticle.content, "html.parser")
-aText = aHtml.find("div", class_="n-text").text
 aReplyCount = int(aHtml.find("span", class_="attr-comment").text)
+contentSection = aHtml.find("div", class_="n-text")
+aText = contentSection.text
+playerSection = contentSection.find("div", class_="video-player")
 aVideoLink = ""
-try:
-    aVideoLink = aHtml.find("div", class_="n-text").find("div", class_="video-player").get("href")
-except:
-    aVideoLink = "None"
+if (playerSection is not None):
+    aVideoLink = playerSection.get("href")
 
-print("Name: " + aName)
-print("Date: " + aDate)
-print("Link: " + aLink)
-print("Text: " + aText)
-print("Reply count: " + str(aReplyCount))
-print("Video link: " + aVideoLink)
+article_set = (aName, aDate, aLink, aText, aVideoLink, aReplyCount)
+cursor.execute("INSERT INTO articles(name, date, link, text, video_link, replies_count) VALUES(?,?,?,?,?,?)", article_set)
+db.commit()
