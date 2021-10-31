@@ -1,0 +1,15 @@
+1. explore parsed site: https://v102.ru/
+2. design database
+   database struct:
+    -name
+    -date
+    -link
+    -text
+    -video link (opt)
+    -views count (opt)
+    -replies count (opt)
+3. design parser
+4. upgrade with parse period control
+   if new exist in db (check "name", "date", "link"),
+    then only update "views count" and "replies count"
+5. creating webUI (django?)
