@@ -10,16 +10,16 @@ TTextMinerConfig {
 
     Output = {
         File = "output.txt";
-	Format = text;
+	    Format = text;
     }
 
     Articles = [
         { Name = "ЗначимаяПерсона" },
-	{ Name = "Достопримечательность" }
+	    { Name = "Достопримечательность" }
     ]
 
     Facts = [
-	{ Name = "SignificantPerson" },
-	{ Name = "Attraction" }
+	    { Name = "SignificantPerson" },
+	    { Name = "Attraction" }
     ]
 }

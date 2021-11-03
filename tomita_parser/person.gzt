@@ -1,0 +1,5 @@
+encoding "utf8";
+
+TAuxDicArticle "ПерсонаВолгограда" {
+    key = { "persons.txt" type=FILE } 
+}

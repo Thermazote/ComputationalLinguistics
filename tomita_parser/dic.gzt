@@ -4,8 +4,9 @@ import "base.proto";
 import "articles_base.proto";
 import "fact_types.proto";
 
+import "person.gzt";
 import "position.gzt";
-import "building_type.gzt";
+import "attraction.gzt";
 
 TAuxDicArticle "ЗначимаяПерсона" {
     key = { "tomita:significant_person.cxx" type=CUSTOM }
