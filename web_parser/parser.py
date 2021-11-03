@@ -5,16 +5,17 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import time
 import logging
+import config
 
 
 def loadNewPage(driver, pageNumber):
     driver.find_element(By.CLASS_NAME, "button-more").click()
     driver.execute_script("arguments[0].setAttribute(arguments[1], arguments[2]);", driver.find_element(By.CLASS_NAME, "button-more"), "data-next-page", pageNumber)
 
-siteURL = "https://v102.ru"
-dbPath = "db.sqlite"
-pagesCount = 0   # count of times to press "show more articles"
-minutesPeriod = 1      # frequency of parsing site - period in minutes
+siteURL = config.URL
+dbPath = config.DB_PATH
+pagesCount = config.PG_COUNT            # count of times to press "show more articles"
+minutesPeriod = config.MINUTES_PERIOD   # frequency of parsing site - period in minutes
 
 logging.basicConfig(filename="parser.log", level=logging.INFO, format='%(asctime)s %(message)s')  # configure logger
 
