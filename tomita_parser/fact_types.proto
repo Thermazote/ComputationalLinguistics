@@ -2,14 +2,10 @@ import "base.proto";
 import "facttypes_base.proto";
 
 message SignificantPerson: NFactType.TFact {
-    optional string LastName = 1;
-    optional string FirstName = 2;
-    optional string Patronymic = 3;
-    optional string Position = 4;
+    required string Name = 1;
+    optional string Position = 2;
 }
 
 message Attraction: NFactType.TFact {
-    optional string Name = 1;
-    optional string Place = 2;
-    optional string BuildingType = 3;
+    required string Name = 1;
 }

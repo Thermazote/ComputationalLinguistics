@@ -149,3 +149,10 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# -----------------------------------------------------------
+
+Useless/
+Articles/
+Patterns/significant_volgograd_persons_two.txt
+PythonScripts/parse_text_with_facts.py

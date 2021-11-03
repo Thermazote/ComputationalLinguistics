@@ -2,7 +2,7 @@
 #GRAMMAR_ROOT S     
 
 S -> Word*
-     Noun<kwtype="ТипПостройки"> interp(Attraction.BuildingType)
+     Noun<kwtype="ДостопримечательностьВолгограда"> interp(Attraction.Name)
      Word*;
 
 
