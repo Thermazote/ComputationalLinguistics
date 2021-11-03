@@ -23,16 +23,17 @@ while(True):
 
     # confugure webdriver
     chrome_options = Options()
-    chrome_options.add_argument("--headless")      # use background mode
+    #chrome_options.add_argument("--headless")      # use background mode
     driver = webdriver.Chrome("chromedriver.exe", chrome_options=chrome_options)
     
     
     # iterate pages as many time as specified
-    for pageNumber in range(1, config.PAGE_COUNT):
+    for pgNumber in range(1, config.PAGE_COUNT):
         # get current page
         driver.get(config.URL)
-        loadPage(driver, pageNumber)
+        loadPage(driver, pgNumber)
         logging.info("New page loaded")
+        time.sleep(2)
         
         # get html code of page
         page = driver.page_source
