@@ -32,7 +32,6 @@ while(True):
         # get current page
         driver.get(config.URL)
         loadPage(driver, pageNumber)
-        time.sleep(20)
         logging.info("New page loaded")
         
         # get html code of page
