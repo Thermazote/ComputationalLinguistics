@@ -16,10 +16,11 @@ def main():
 
     # Построчная загрузка файла в RDD
     # input_file = spark.sparkContext.textFile(f'{ROOT_DIR}/TextExamples/FirstExample.txt')
-    input_file = spark.sparkContext.textFile(f'{ROOT_DIR}/TextExamples/OnlyFactsText.txt')
+    # input_file = spark.sparkContext.textFile(f'{ROOT_DIR}/TextExamples/OnlyFactsText.txt')
+    input_file = spark.sparkContext.wholeTextFiles(f'{ROOT_DIR}/Articles/Processed/*.txt')
 
     print(input_file.collect())
-    prepared = input_file.map(lambda x: ([x]))
+    prepared = input_file.map(lambda x: ([x[1]]))
     df = prepared.toDF()
     prepared_df = df.selectExpr('_1 as text')
 
@@ -72,9 +73,9 @@ def main():
     rescaled_data.select('features').show(truncate=False, vertical=True)
 
     # Построить модель Word2Vec
-    word2Vec = Word2Vec(vectorSize=3, minCount=0, inputCol='words', outputCol='result')
-    model = word2Vec.fit(words)
-    w2v_df = model.transform(words)
+    word2Vec = Word2Vec(vectorSize=3, minCount=0, inputCol='filtered', outputCol='result')
+    model = word2Vec.fit(filtered)
+    w2v_df = model.transform(filtered)
     w2v_df.show()
 
     vocabulary = vectorizer.vocabulary

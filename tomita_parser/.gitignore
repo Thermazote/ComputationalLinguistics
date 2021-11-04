@@ -2,3 +2,5 @@ old_txts_gzts/
 files_from_second_lw.7z
 parser_algo.txt
 *.bin
+tomita-parser
+libmystem_c_binding.so
