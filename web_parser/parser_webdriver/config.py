@@ -1,0 +1,5 @@
+URL = "https://v102.ru"
+DB_PATH = "db.sqlite"
+PAGE_COUNT = 300
+MINUTES_PERIOD = 360
+PAGE_OFFSET = 0
