@@ -28,7 +28,7 @@ while(True):
     
     
     # iterate pages as many time as specified
-    for pgNumber in range(1 + config.START_WITH_PAGE, config.PAGE_COUNT + config.START_WITH_PAGE):
+    for pgNumber in range(1 + config.PAGE_OFFSET, config.PAGE_COUNT + config.PAGE_OFFSET):
         # get current page
         driver.get(config.URL)
         loadPage(driver, pgNumber)
@@ -58,10 +58,10 @@ while(True):
             aVideoLink = ""
             if (playerSection is not None):
                 aVideoLink = playerSection.find("iframe").get("src")
-            aReplyCount = aHtml.find("span", class_="attr-comment").text
+            aRepliesCount = aHtml.find("span", class_="attr-comment").text
 
             # create dataset and check set for current article
-            aDataSet = (aName, aDate, aLink, aText, aVideoLink, aReplyCount)
+            aDataSet = (aName, aDate, aLink, aText, aVideoLink, aRepliesCount)
             checkSet = (aName, aDate, aLink)
             
             # check if current article is on the database

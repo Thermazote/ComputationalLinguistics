@@ -1,5 +1,4 @@
-URL = "https://v102.ru"
+URL = "https://v102.ru/"
 DB_PATH = "db.sqlite"
-PAGE_COUNT = 500
 MINUTES_PERIOD = 360
-START_WITH_PAGE = 228
+ARTICLES_COUNT = 30
