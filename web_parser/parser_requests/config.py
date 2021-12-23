@@ -1,4 +1,3 @@
 URL = "https://v102.ru/"
-DB_PATH = "db.sqlite"
 MINUTES_PERIOD = 600
 ARTICLES_COUNT = 10000
