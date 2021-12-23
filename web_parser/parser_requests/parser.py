@@ -46,7 +46,7 @@ while True:
             continue
         
         # get articles data
-        aName = aHtml.find("h1", itemprop = "headline").text
+        aName = aHtml.find("h1", itemprop="headline").text
         aDateRaw = aHtml.find("span", class_="date-new").text.split()
         aDate = aDateRaw[0] + " " + aDateRaw[1]
         contentSection = aHtml.find("div", class_="n-text")
@@ -61,7 +61,7 @@ while True:
         document = articles_coll.find_one({"name": aName, "date": aDate, "link": aLink})
         if document:
             # update replies count of EXISTING article
-            articles_coll.update_one({"_id": document["_id"]}, {"$set": {"replies_count": document["replies_count"]}})
+            articles_coll.update_one({"_id": document["_id"]}, {"$set": {"replies_count": aRepliesCount}})
             logging.info("Article with ID = " + str(document["_id"]) + " was updated in database.")
         else:
             # add to database NEW article
