@@ -59,7 +59,7 @@ while True:
             articlePage = driver.page_source
             aHtml = BS(articlePage, "html.parser")
             contentSection = aHtml.find("div", class_="n-text")
-            aText = contentSection.text
+            aText = contentSection.text.strip()
             playerSection = contentSection.find("div", class_="video-player")
             aVideoLink = ""
             if playerSection is not None:

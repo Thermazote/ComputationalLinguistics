@@ -50,7 +50,7 @@ while True:
         aDateRaw = aHtml.find("span", class_="date-new").text.split()
         aDate = aDateRaw[0] + " " + aDateRaw[1]
         contentSection = aHtml.find("div", class_="n-text")
-        aText = contentSection.text
+        aText = contentSection.text.strip()
         playerSection = contentSection.find("div", class_="video-player")
         aVideoLink = ""
         if playerSection is not None:
