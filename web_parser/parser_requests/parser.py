@@ -2,9 +2,11 @@ import os
 from bs4 import BeautifulSoup as BS
 import pymongo
 import requests
+import datetime
 import time
 import logging
 import config
+
 
 logging.basicConfig(filename="parser.log", level=logging.INFO, format='%(asctime)s %(message)s')  # configure logger
 
@@ -48,7 +50,12 @@ while True:
         # get articles data
         aName = aHtml.find("h1", itemprop="headline").text
         aDateRaw = aHtml.find("span", class_="date-new").text.split()
-        aDate = aDateRaw[0] + " " + aDateRaw[1]
+        aDay = int(aDateRaw[0].split('.')[0])
+        aMonth = int(aDateRaw[0].split('.')[1])
+        aYear = int(aDateRaw[0].split('.')[2])
+        aHour = int(aDateRaw[1].split(':')[0])
+        aMinutes = int(aDateRaw[1].split(':')[1])
+        aDate = datetime.datetime(aYear, aMonth, aDay, aHour, aMinutes)
         contentSection = aHtml.find("div", class_="n-text")
         aText = contentSection.text.strip()
         playerSection = contentSection.find("div", class_="video-player")
