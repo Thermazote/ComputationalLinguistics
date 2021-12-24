@@ -1,75 +1,119 @@
 from nltk.tag import pos_tag
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
-from nltk import FreqDist, classify, NaiveBayesClassifier
+from nltk import NaiveBayesClassifier
 from nltk.tokenize import word_tokenize
 
-import re, string, random, json, os, codecs, time
+import re, string, os
 
 import pickle
-
 import pandas as pd
+import config
+import pymongo
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 def remove_noise(tweet_tokens, stop_words=()):
     cleaned_tokens = list()
 
     for token, tag in pos_tag(tweet_tokens):
-        token = re.sub('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', token)
-        token = re.sub('(@[A-Za-z0-9_]+)', '', token)
+        token = re.sub(
+            "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
+            "",
+            token,
+        )
+        token = re.sub("(@[A-Za-z0-9_]+)", "", token)
 
-        if tag.startswith('NN'):
-            pos = 'n'
-        elif tag.startswith('VB'):
-            pos = 'v'
+        if tag.startswith("NN"):
+            pos = "n"
+        elif tag.startswith("VB"):
+            pos = "v"
         else:
-            pos = 'a'
+            pos = "a"
 
         lemmatizer = WordNetLemmatizer()
         token = lemmatizer.lemmatize(token, pos)
 
-        if len(token) > 0 and token not in string.punctuation and token.lower() not in stop_words:
+        if (
+            len(token) > 0
+            and token not in string.punctuation
+            and token.lower() not in stop_words
+        ):
             cleaned_tokens.append(token.lower())
 
     return cleaned_tokens
 
 
-if __name__ == '__main__':
-    command = input('train(t) / use(u): ')
+if __name__ == "__main__":
+    command = input("train(t) / use(u): ")
 
-    if command == 't':
-        stop_words = stopwords.words('russian')
+    if command == "t":
+        print("List of datasets:\n")
 
-        print(f'Start clean data {time.time()}')
+        for file in os.listdir(f"{ROOT_DIR}/datasets/"):
+            print(file)
 
-        data = pd.read_csv(f'{ROOT_DIR}/datasets/reviews.csv', sep='\t')
+        filename = input("\nWhat dataset use for training?: ")
+        data = pd.read_csv(f"{ROOT_DIR}/datasets/{filename}")
 
-        cleaned_tokenized_data = [(dict([token, True] for token in remove_noise(
-            word_tokenize(data.loc[index, 'review']))), data.loc[index, 'sentiment']) for index in data.index]
+        filename = input("\nWhat filename use for model file?: ")
 
-        print(f'Finish clean data {time.time()}')
+        text_count = data.index[-1]
+        stop_words = stopwords.words("russian")
+        cleaned_tokenized_data = list()
 
-        print(f'dataset len = {len(data)}')
-        print(f'Start training {time.time()}')
+        for index in data.index:
+            cleaned_tokenized_data.append(
+                (
+                    dict(
+                        [token, True]
+                        for token in remove_noise(
+                            word_tokenize(data.loc[index, "Text"]), stop_words
+                        )
+                    ),
+                    data.loc[index, "Class"],
+                )
+            )
+            print(f"{index}/{text_count}")
 
         classifier = NaiveBayesClassifier.train(cleaned_tokenized_data)
 
-        print(f'Finish training {time.time()}')
-
-        with open(f'{ROOT_DIR}/models/reviews_trained_model.data', 'wb') as file:
+        with open(f"{ROOT_DIR}/models/{filename}", "wb") as file:
             pickle.dump(classifier, file)
 
-    elif command == 'u':
+        print("Model trained!")
 
-        with open(f'{ROOT_DIR}/models/basic_500_news_model.data', 'rb') as file:
+    elif command == "u":
+        print("List of models:\n")
+
+        for file in os.listdir(f"{ROOT_DIR}/models/"):
+            print(file)
+
+        filename = input("\nWhich model use?: ")
+
+        with open(f"{ROOT_DIR}/models/{filename}", "rb") as file:
             classifier = pickle.load(file)
 
-        for file in os.listdir(f'{ROOT_DIR}/../Word2Vec/Articles/Processed'):
-            with open(f'{ROOT_DIR}/../Word2Vec/Articles/Processed/{file}') as text_file:
-                text = text_file.read()
+        connection = f"mongodb+srv://{config.username}:{config.password}@cluster0.8ngl3.mongodb.net"
+        client = pymongo.MongoClient(connection, serverSelectionTimeoutMS=5000)
+        db = client["articles_analysis"]
+        collection = db["articles"]
 
-            cleaned_tokenized_text = dict([token, True] for token in remove_noise(word_tokenize(text)))
-            print(text + '\n', classifier.classify(cleaned_tokenized_text))
-            print()
-            print()
+        count_articles = collection.count_documents(
+            {"facts": {"$exists": True}, "sentiment": {"$exists": False}}
+        )
+        count_class_articles = 0
+
+        for article in collection.find(
+            {"facts": {"$exists": True}, "sentiment": {"$exists": False}}
+        ):
+            cleaned_tokenized_text = dict(
+                [token, True] for token in remove_noise(word_tokenize(article["text"]))
+            )
+            sentiment = classifier.classify(cleaned_tokenized_text)
+            collection.update_one(
+                {"_id": article["_id"]}, {"$set": {"sentiment": sentiment}}
+            )
+            count_class_articles += 1
+            print(f"{count_class_articles}/{count_articles}")
