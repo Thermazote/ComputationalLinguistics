@@ -18,31 +18,31 @@ sg_persons = [
     person.nikolaev
 ]
 
-vlg_attractions = [
-    attraction.art_museum, attraction.exhibition_hall_of_the_museum_of_fine_arts, attraction.kazan_cathedral,
-    attraction.regional_philharmonic, attraction.avant_garde, attraction.scientific_library,
-    attraction.scientific_library, attraction.square_of_the_fallen_fighters, attraction.monument_to_sasha_filipov,
-    attraction.museum_of_the_history_of_the_kirov_region, attraction.monument_to_the_chekists,
-    attraction.armenian_church_of_st_george, attraction.monument_tram, attraction.military_train,
-    attraction.gergardts_mill, attraction.dzerzhinsky_monument, attraction.tsaritsyn_fire_brigade_building,
-    attraction.pavlovs_house, attraction.chelyabinsk_collective_farmer, attraction.bk_13, attraction.beit_david,
-    attraction.barmaley, attraction.bald_mountain, attraction.elevator, attraction.panikha_monument,
-    attraction.fountain_of_lovers, attraction.lukonins_apartment_museum,
-    attraction.museum_and_exhibition_center_of_the_krasnoarmeysky_district, attraction.mamayev_kurgan,
-    attraction.river_port, attraction.tsaritsyn_opera, attraction.health_history_museum,
-    attraction.museum_children_of_tsaritsyn_stalingrad_volgograd,
-    attraction.peoples_museum_of_volgograd_railway_workers, attraction.aviation_museum,
-    attraction.tsaritsyn_stalingrad_volgograd_military_patriotic_museum_of_the_history_of_communications_and_radio_amateurism,
-    attraction.park_named_after_yuri_gagarin, attraction.museum_of_the_history_of_the_volga_don_shipping_channel,
-    attraction.exhibition_hall_of_the_volgograd_regional_organization_of_the_union_of_artists_of_russia,
-    attraction.victory_park, attraction.komsomol_garden, attraction.childrens_city_park,
-    attraction.sasha_filippov_square, attraction.friendship_park, attraction.hall_of_military_glory,
-    attraction.botanical_garden_vgspu, attraction.tspkio, attraction.museum_of_musical_instruments,
-    attraction.museum_of_weights_and_measures, attraction.regional_museum_of_local_lore,
-    attraction.museum_reserve_old_sarepta, attraction.planetarium, attraction.museum_memory,
-    attraction.museum_panorama_battle_of_stalingrad, attraction.memorial_history_museum, attraction.city_garden,
-    attraction.volgograd_arena
-]
+# vlg_attractions = [
+#     attraction.art_museum, attraction.exhibition_hall_of_the_museum_of_fine_arts, attraction.kazan_cathedral,
+#     attraction.regional_philharmonic, attraction.avant_garde, attraction.scientific_library,
+#     attraction.scientific_library, attraction.square_of_the_fallen_fighters, attraction.monument_to_sasha_filipov,
+#     attraction.museum_of_the_history_of_the_kirov_region, attraction.monument_to_the_chekists,
+#     attraction.armenian_church_of_st_george, attraction.monument_tram, attraction.military_train,
+#     attraction.gergardts_mill, attraction.dzerzhinsky_monument, attraction.tsaritsyn_fire_brigade_building,
+#     attraction.pavlovs_house, attraction.chelyabinsk_collective_farmer, attraction.bk_13, attraction.beit_david,
+#     attraction.barmaley, attraction.bald_mountain, attraction.elevator, attraction.panikha_monument,
+#     attraction.fountain_of_lovers, attraction.lukonins_apartment_museum,
+#     attraction.museum_and_exhibition_center_of_the_krasnoarmeysky_district, attraction.mamayev_kurgan,
+#     attraction.river_port, attraction.tsaritsyn_opera, attraction.health_history_museum,
+#     attraction.museum_children_of_tsaritsyn_stalingrad_volgograd,
+#     attraction.peoples_museum_of_volgograd_railway_workers, attraction.aviation_museum,
+#     attraction.tsaritsyn_stalingrad_volgograd_military_patriotic_museum_of_the_history_of_communications_and_radio_amateurism,
+#     attraction.park_named_after_yuri_gagarin, attraction.museum_of_the_history_of_the_volga_don_shipping_channel,
+#     attraction.exhibition_hall_of_the_volgograd_regional_organization_of_the_union_of_artists_of_russia,
+#     attraction.victory_park, attraction.komsomol_garden, attraction.childrens_city_park,
+#     attraction.sasha_filippov_square, attraction.friendship_park, attraction.hall_of_military_glory,
+#     attraction.botanical_garden_vgspu, attraction.tspkio, attraction.museum_of_musical_instruments,
+#     attraction.museum_of_weights_and_measures, attraction.regional_museum_of_local_lore,
+#     attraction.museum_reserve_old_sarepta, attraction.planetarium, attraction.museum_memory,
+#     attraction.museum_panorama_battle_of_stalingrad, attraction.memorial_history_museum, attraction.city_garden,
+#     attraction.volgograd_arena
+# ]
 
 DEFAULT_FORM_OF_NAME = 0
 
@@ -70,10 +70,10 @@ def change_names_to_default(text: str) -> str:
                     finally:
                         text = text.replace(f' {form_of_name}', f' {sg_person[DEFAULT_FORM_OF_NAME]}')
 
-    for vlg_attraction in vlg_attractions:
-        for form_of_name in vlg_attraction[1:]:
-            if text.find(form_of_name) != -1:
-                text = text.replace(form_of_name, vlg_attraction[DEFAULT_FORM_OF_NAME])
+    # for vlg_attraction in vlg_attractions:
+    #     for form_of_name in vlg_attraction[1:]:
+    #         if text.find(form_of_name) != -1:
+    #             text = text.replace(form_of_name, vlg_attraction[DEFAULT_FORM_OF_NAME])
 
     return text
 
@@ -82,12 +82,23 @@ def main():
     dbPath = DB_PATH
     db = sqlite3.connect(dbPath)
     cursor = db.cursor()
+    cursor.execute('SELECT id, text FROM articles ORDER BY id')
+    records = cursor.fetchall()
 
-    for row in cursor.execute('SELECT id, text FROM articles ORDER BY id'):
+    for row in records:
         id, text = row
 
+        print(id)
+
+        # changed_text = change_names_to_default(text.lower())
+
+        changed_text = change_names_to_default(text)
+
+        with open(f'{ROOT_DIR}/Articles/ArticlesText/article_{id}.txt', mode='w') as article_text_file:
+            article_text_file.write(changed_text)
+
         with open(f'{ROOT_DIR}/../tomita_parser/input.txt', mode='w') as tomita_input_file:
-            tomita_input_file.write(change_names_to_default(text.lower()))
+            tomita_input_file.write(changed_text)
 
         os.system('cd ../../tomita_parser/ && ./tomita-parser config.proto')
 
@@ -96,6 +107,8 @@ def main():
 
             with open(f'{ROOT_DIR}/Articles/AfterTomita/article_{id}.txt', mode='w') as tomita_article:
                 tomita_article.writelines(article_text)
+
+            # Processing tomita
 
             processed_article_text = parse_text_with_facts(article_text)
 
@@ -111,14 +124,14 @@ def main():
 
 
 def test():
-    text = 'бочаров потаповой губернатор андрей бочаров за бочаровым андреем вместе со своим помощником дорждеевым ' \
-           'отправились к шарифову руслану за консультацией насчет писемской анны, которая живет неподалеку от ' \
-           'виктории афанасовой. николаев олег прибыл на место вместе со своим помощником савиной, которая ' \
-           'распорядилась бахину убрать мусор алёне потаповой вместе с натальей сахаровой, где бочаров андрей был ' \
-           'только за, хотя и бочаров был против андрея бочарова, который поддерживался идеями о бочарове андрее. ' \
-           'несмотря на то, что волгоград арена закрылась на ремонт, в музее истории здравоохранения все еще царит ' \
-           'царицынская опера, хотя не видать поблизости музея авиации. особенно я был доволен музеем "дети царицына, ' \
-           'сталинграда, волгограда", ведь там парка дружбы не видать, хотя о ботаническом саде вгспу можно только и ' \
+    text = 'Бочаров Потаповой Губернатор Андрей Бочаров За Бочаровым Андреем Вместе Со Своим Помощником Дорждеевым ' \
+           'отправились К Шарифову Руслану За Консультацией Насчет Писемской Анны, Которая Живет Неподалеку От ' \
+           'Виктории Афанасовой. Николаев Олег Прибыл На Место Вместе Со Своим Помощником Савиной, Которая ' \
+           'распорядилась Бахину Убрать Мусор Алёне Потаповой Вместе С Натальей Сахаровой, Где Бочаров Андрей Был ' \
+           'только За, Хотя И Бочаров Был Против Андрея Бочарова, Который Поддерживался Идеями О Бочарове Андрее. ' \
+           'несмотря На То, Что Волгоград Арена Закрылась На Ремонт, В Музее Истории Здравоохранения Все Еще Царит ' \
+           'царицынская Опера, Хотя Не Видать Поблизости Музея Авиации. Особенно Я Был Доволен Музеем "дети Царицына, ' \
+           'сталинграда, Волгограда", Ведь Там Парка Дружбы Не Видать, Хотя О Ботаническом Саде Вгспу Можно Только И ' \
            'мечтать.'
 
     processed_text = change_names_to_default(text)
@@ -126,4 +139,5 @@ def test():
 
 
 if __name__ == '__main__':
+    # test()
     main()

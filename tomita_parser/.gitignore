@@ -4,3 +4,6 @@ parser_algo.txt
 *.bin
 tomita-parser
 libmystem_c_binding.so
+input.txt
+output.txt
+pretty.html

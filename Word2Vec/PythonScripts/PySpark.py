@@ -6,6 +6,7 @@ from pyspark.ml.feature import IDF
 from pyspark.ml.feature import Word2Vec
 from __init__ import ROOT_DIR
 from pprint import pprint
+from datetime import datetime
 
 
 def main():
@@ -17,7 +18,11 @@ def main():
     # Построчная загрузка файла в RDD
     # input_file = spark.sparkContext.textFile(f'{ROOT_DIR}/TextExamples/FirstExample.txt')
     # input_file = spark.sparkContext.textFile(f'{ROOT_DIR}/TextExamples/OnlyFactsText.txt')
-    input_file = spark.sparkContext.wholeTextFiles(f'{ROOT_DIR}/Articles/Processed/*.txt')
+    # input_file = spark.sparkContext.wholeTextFiles(f'{ROOT_DIR}/Articles/ArticlesText/*.txt')
+    # input_file = spark.sparkContext.wholeTextFiles(f'{ROOT_DIR}/Articles/Processed/*.txt')
+
+    input_file = spark.sparkContext.wholeTextFiles(f'{ROOT_DIR}/Articles/ArticlesTextNew/*.txt')
+    # input_file = spark.sparkContext.wholeTextFiles(f'{ROOT_DIR}/Articles/TenThousandStorage/*.txt')
 
     print(input_file.collect())
     prepared = input_file.map(lambda x: ([x[1]]))
@@ -73,7 +78,7 @@ def main():
     rescaled_data.select('features').show(truncate=False, vertical=True)
 
     # Построить модель Word2Vec
-    word2Vec = Word2Vec(vectorSize=3, minCount=0, inputCol='filtered', outputCol='result')
+    word2Vec = Word2Vec(vectorSize=40, minCount=0, inputCol='filtered', outputCol='result')
     model = word2Vec.fit(filtered)
     w2v_df = model.transform(filtered)
     w2v_df.show()
@@ -81,10 +86,13 @@ def main():
     vocabulary = vectorizer.vocabulary
     pprint(f'Словарь:\n{vocabulary}')
 
+    print(datetime.now())
+
     word_from_vocabulary = input('Введите одно слово из этого словаря: ').lower().strip()
 
     if word_from_vocabulary in vocabulary:
-        print(model.findSynonyms(f'{word_from_vocabulary}', 15).collect())
+        print(model.findSynonyms(f'{word_from_vocabulary}', 30).collect())
+        # pprint(word2Vec.most_similar(positive=[word_from_vocabulary]))
     else:
         raise ValueError('Словарь не содержит данного слова!')
 
